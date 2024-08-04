@@ -2,11 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
-image_path = "circles/3.png"
-
-
+image_path = "clocks/3.png"
 image = cv2.imread(image_path)
 
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -33,10 +29,10 @@ if circles is not None:
         y_sum += y
         # cv2.circle(image, (x, y), r, (0, 255, 0), 10)
         # cv2.circle(image, (x, y), 30, (0, 255, 0), 10)
-    ave_x = x_sum // len(circles)
-    ave_y = y_sum // len(circles)
+    center_ave_x = x_sum // len(circles)
+    center_ave_y = y_sum // len(circles)
     # 円の中心座標の平均をプロット
-    cv2.circle(image, (ave_x, ave_y), 30, (255, 0, 0), 20)
+    cv2.circle(image, (center_ave_x, center_ave_y), 30, (255, 0, 0), 20)
 else:
     print('円検出なし')
     exit()
@@ -58,32 +54,124 @@ if lines is not None:
     for line in lines:
         x1, y1, x2, y2 = line[0]
         # 線分の中心を求める
-        mid_x = (x1 + x2) // 2 
-        mid_y = (y1 + y2) // 2
+        line_mid_x = (x1 + x2) // 2 
+        line_mid_y = (y1 + y2) // 2
         # 線分の中心と円の中心のユークリッド距離を求める
         # distance = np.sqrt((mid_x - x_ave) ** 2 + (mid_y - y_ave) ** 2)
-        distance = np.linalg.norm(np.array([mid_x, mid_y]) - np.array([ave_x, ave_y]))
+        distance = np.linalg.norm(np.array([line_mid_x, line_mid_y]) - np.array([center_ave_x, center_ave_y]))
         distances.append((distance, line[0]))
-    
-
     # 円の中心との距離が近い直線が時計の針である
     # 針が12時を指すとき、長針を表す直線であり、
     # 針が12時以外を指すとき、短針を表す直線である
     # 円の中心と近い針のうち、初めて12時以外を指すものが短針であり、正しい時刻を表す
     distances.sort()
-    for distance in distances:
-        x1_1, y1_1, x1_2, y1_2 = distance[1]
-        cv2.line(image, (x1_1, y1_1), (x1_2, y1_2), (0, 0, 255), 10)
-    # 2つの直線がなす角度を計算
-        angle = np.arctan2(y1_2 - y1_1, x1_2 - x1_1)
-        # 時間に変換、時計は1時間で30°進む
-        time = round(np.degrees(abs(angle))/30)
-        # timeが0のとき、直線は長針であるため次の直線を確認する
+    count = 0
+
+    def check_time(x1, y1, x2, y2, time):
+        # 時計の上側と下側で場合分け
+        # 第1象限、第2象限のとき    
+        # 始点のyが終点よりも下にあるとき
         if time == 0:
-            continue
-        print(np.degrees(abs(angle)))
-        print(f'{time}時')
-        exit()
+            return False
+        if y1 == y2:
+            if x1 < x2:
+                if time == 3:
+                    return True
+                else:
+                    return False
+            else:
+                if time == 9:
+                    return True
+                else:
+                    return False
+        if y1 > y2:
+            if x1 == x2:
+                return False
+            if x1 < x2:
+                if 1 <= time <= 3:
+                    return True
+                else:
+                    return False
+            else:
+                if 9 <= time <= 11:
+                    return True
+                else:
+                    return False
+        else:
+            if x1 <= x2:
+                if 4 <= time <= 6:
+                    return True
+                else:
+                    return False
+            else:
+                if  7 <= time <= 9:
+                    return True
+                else:
+                    return False
+
+    for distance in distances:
+        # print(count)
+        count +=1
+        x1, y1, x2, y2 = distance[1]
+        # 直線の始点を円の中心に近いものとする
+        tmp1_dis = np.linalg.norm(np.array([x1, y1])-np.array([center_ave_x, center_ave_y]))
+        tmp2_dis = np.linalg.norm(np.array([x2, y2])-np.array([center_ave_x, center_ave_y]))
+        if tmp1_dis > tmp2_dis:
+            tmp_x = x1
+            x1 = x2
+            x2 = tmp_x
+            tmp_y = y1
+            y1 = y2
+            y2 = tmp_y
+        #2つの直線がなす角度を計算
+        angle = np.arctan2(y2 - y1, x2 - x1)
+        angle_degrees = np.degrees(angle)
+        
+        angle_degrees *= -1
+        # print(angle_degrees)
+        # if angle_degrees < 0:
+        #     angle_degrees += 360
+        # flg = 0
+
+        if 0 <= angle_degrees <= 10:
+            angle_degrees = 90 - angle_degrees
+        elif 15 < angle_degrees <= 90:
+            angle_degrees = 90 - angle_degrees
+            flg = 1
+        elif 100 < angle_degrees < 180:
+            angle_degrees = 360 - angle_degrees + 90
+            flg = 2
+
+        
+
+        # if -180 < angle_degrees < -90:
+        #     angle_degrees *= -1
+        #     angle_degrees += 90
+        #     flg = 1
+        # elif -90 < angle_degrees < 0:
+        #     angle_degrees *= -1
+        #     angle_degrees += 90
+        #     flg = 2
+        # elif 0 < angle_degrees < 90:
+        #     angle_degrees = 90 - angle_degrees
+        #     flg = 3
+        # elif 90 < angle_degrees < 180:
+        #     angle_degrees = 360 - angle_degrees + 90
+        #     flg = 4
+        
+
+        time = round(angle_degrees /30)
+
+        if (check_time(x1, y1, x2, y2, time)):
+        # if time != 0:
+            cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 10)
+            print(x1, y1, x2, y2)
+            print(f'{angle_degrees}度 -> {time}時')
+            # print(flg)
+            # 結果を保存する
+            cv2.imwrite('0001.png', image)
+            cv2.destroyAllWindows()
+            exit()
     # 時間に変換
     # 針のなす角度は、1時間ごとに30°増加する
 else:
@@ -93,5 +181,4 @@ else:
 # plt.axis('off')
 # plt.show()
 
-# 結果を保存する
-cv2.imwrite('0001.png', image)
+
