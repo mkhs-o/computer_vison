@@ -10,7 +10,7 @@ gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 blurred =cv2.GaussianBlur(gray_image, (5, 5), 0)
 
 edges = cv2.Canny(blurred, 20, 50, apertureSize = 3)    # Cannyエッジ検出
-cv2.imwrite('0000.png', edges)
+cv2.imwrite('edges.png', edges)
 #計算不可が少ない、長さを決められる, maxLineGap 検出された2本の線を1本とみなす間隔
 lines = cv2.HoughLinesP(edges,               
                         rho = 1,              
@@ -28,5 +28,5 @@ if lines is not None:
 else:
     print("検知なし")
 
-cv2.imwrite('0001.png',image)
+cv2.imwrite('line.png',image)
 

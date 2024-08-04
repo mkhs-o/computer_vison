@@ -37,5 +37,5 @@ else:
     print('円検出なし')
     exit()
 
-cv2.imwrite('0001.png', image)
+cv2.imwrite('circle.png', image)
 
