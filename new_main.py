@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-image_path = "clocks/3.png"
+image_path = "clocks/11.png"
 image = cv2.imread(image_path)
 
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -128,46 +128,54 @@ if lines is not None:
         angle_degrees = np.degrees(angle)
         
         angle_degrees *= -1
+        
         # print(angle_degrees)
-        # if angle_degrees < 0:
-        #     angle_degrees += 360
-        # flg = 0
-
-        if 0 <= angle_degrees <= 10:
-            angle_degrees = 90 - angle_degrees
-        elif 15 < angle_degrees <= 90:
+        if angle_degrees < 0:
+            angle_degrees += 360
+        print(angle_degrees)
+        flg = 0
+        
+        # # 針が3時を指すとき
+        # if 0 <= angle_degrees <= 10:
+        #     angle_degrees = 90 - angle_degrees
+        #     flg = 0
+        # # 針が1時から2時を指すとき
+        # elif 15 < angle_degrees <= 90:
+        #     angle_degrees = 90 - angle_degrees
+        #     flg = 1
+        # # 針が10時から11時を指すとき
+        # elif 100 < angle_degrees < 170:
+        #     angle_degrees = 360 - angle_degrees + 90
+        #     flg = 2
+        # # 針が9時を指すとき
+        # elif 170 <= angle_degrees <= 190:
+        #     angle_degrees = 360 - angle_degrees + 90
+        #     flg = 3
+        # # 針が7時から8時を指すとき
+        # elif 190 < angle_degrees < 260:
+        #     angle_degrees = 360 - angle_degrees + 90
+        #     flg = 4
+        # # 針が6時を指すとき
+        # elif 260 <= angle_degrees <= 280:
+        #     angle_degrees = 360 - angle_degrees + 90
+        # # 針が4時から6時を指すとき
+        # elif 280 < angle_degrees <= 350:
+        #     angle_degrees = 360 - angle_degrees + 90
+        if 0 <= angle_degrees <= 90:
             angle_degrees = 90 - angle_degrees
             flg = 1
-        elif 100 < angle_degrees < 180:
+        else:
             angle_degrees = 360 - angle_degrees + 90
             flg = 2
 
-        
-
-        # if -180 < angle_degrees < -90:
-        #     angle_degrees *= -1
-        #     angle_degrees += 90
-        #     flg = 1
-        # elif -90 < angle_degrees < 0:
-        #     angle_degrees *= -1
-        #     angle_degrees += 90
-        #     flg = 2
-        # elif 0 < angle_degrees < 90:
-        #     angle_degrees = 90 - angle_degrees
-        #     flg = 3
-        # elif 90 < angle_degrees < 180:
-        #     angle_degrees = 360 - angle_degrees + 90
-        #     flg = 4
-        
-
         time = round(angle_degrees /30)
 
-        if (check_time(x1, y1, x2, y2, time)):
-        # if time != 0:
+        # if (check_time(x1, y1, x2, y2, time)):
+        if time != 0:
             cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 10)
             print(x1, y1, x2, y2)
             print(f'{angle_degrees}度 -> {time}時')
-            # print(flg)
+            print(flg)
             # 結果を保存する
             cv2.imwrite('0001.png', image)
             cv2.destroyAllWindows()
