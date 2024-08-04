@@ -26,7 +26,8 @@ for file in files:
                             )
 
     if circles is not None:
-        circles = np.round(circles[0, :]).astype("int")
+        circles = np.uint16(np.around(circles))
+        circles = circles[0, :]
         x_sum = 0
         y_sum = 0
         for (x, y, r) in circles:

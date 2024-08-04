@@ -2,11 +2,10 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-image_path = 'clocks/10.png'
+image_path = 'clocks/1.png'
 image = cv2.imread(image_path)
 
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
 blurred = cv2.GaussianBlur(gray_image, (5, 5), 0)
 
 # ハフ変換による円を検出
@@ -21,7 +20,8 @@ circles = cv2.HoughCircles(blurred,
                            )
 
 if circles is not None:
-    circles = np.round(circles[0, :]).astype("int")
+    circles = np.uint16(np.around(circles))
+    circles = circles[0, :]
     x_sum = 0
     y_sum = 0
     for (x, y, r) in circles:
@@ -37,7 +37,5 @@ else:
     print('円検出なし')
     exit()
 
-plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 cv2.imwrite('0001.png', image)
-plt.axis('off')
-plt.show()
+
