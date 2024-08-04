@@ -13,8 +13,8 @@ for file in files:
     image = cv2.imread(image_path)
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray_image, (5, 5), 0)
-    # 時計の円の検出
-    # ハフ変換による円を検出する
+    # 時計の中心座標を求める
+    # ハフ変換により円を検出
     circles = cv2.HoughCircles(blurred, 
                             cv2.HOUGH_GRADIENT, 
                             dp=1.5,          # 解像度の比率
@@ -39,8 +39,8 @@ for file in files:
         # 円の中心座標の平均をプロット
         cv2.circle(image, (center_ave_x, center_ave_y), 30, (255, 0, 0), 20)
     else:
-        print('円検出なし')
-        exit()
+        print('f{file}:円未検出')
+        break
 
     # 時計の針の検出
     # ハフ変換による直線の検出
@@ -159,4 +159,4 @@ for file in files:
                 cv2.imwrite(f'{result_dir}/{time}時.png', image)
                 break
     else:
-        print("直線検出なし")
+        print('f{file}:直線未検出')
