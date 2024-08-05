@@ -58,8 +58,10 @@ def check_time(x1, y1, x2, y2, time):
                 return True
             else:
                 return False
-
+print('入力 出力')
 for file in files:
+    # if file != "1.png":
+    #     continue
     image_path = os.path.join(images_dir, file)
     image = cv2.imread(image_path)
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -72,8 +74,8 @@ for file in files:
                             minDist=330,     # 円の中心の最小距離、誤検出に関わる
                             param1=100,      # Cannyエッジ検出の大きい方のしきい値
                             param2=40,       # 投票数の基準
-                            minRadius=800,   # 最小半径   
-                            maxRadius=1400   # 最大半径
+                            minRadius=700,   # 最小半径   
+                            maxRadius=1000   # 最大半径
                             )
 
     if circles is not None:
@@ -96,13 +98,15 @@ for file in files:
 
     # 時計の針の検出
     # ハフ変換による直線の検出
-    edges = cv2.Canny(blurred, 20, 50)    # Cannyエッジ検出
+
+    # Cannyエッジ検出
+    edges = cv2.Canny(blurred, 20, 50)    
     lines = cv2.HoughLinesP(edges,               
                             rho = 1,            
                             theta = np.pi/100,
                             threshold = 100,    
                             minLineLength = 15,   
-                            maxLineGap = 100    # 検出された線を1つにまとめる
+                            maxLineGap = 170    # 検出された線を1つにまとめる
                         )
 
     # 線分が見つかれば{x1, y1, x2, y2}のタプル、見つからなければNone
@@ -158,7 +162,7 @@ for file in files:
             # 得られた時間に矛盾がないかチェック
             if (check_time(x1, y1, x2, y2, time)):
                 cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 10)
-                print(f'{file}: {time}時')
+                print(f'{file} {time}時')
                 cv2.imwrite(f'{result_dir}/{time}時.png', image)
                 break
     else:

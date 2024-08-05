@@ -16,15 +16,16 @@ for file in files:
 
     blurred =cv2.GaussianBlur(gray_image, (5, 5), 0)
 
-    edges = cv2.Canny(blurred, 20, 50, apertureSize = 3)    # Cannyエッジ検出
-    cv2.imwrite('edges.png', edges)
+    # Cannyエッジ検出
+    edges = cv2.Canny(blurred, 20, 50)   
+    # cv2.imwrite('edges.png', edges)
     # ハフ変換
     lines = cv2.HoughLinesP(edges,               
                             rho = 1,              
                             theta = np.pi/100,
                             threshold = 100,       
                             minLineLength = 15,    
-                            maxLineGap = 100       # 検出された2本の線を1本とみなす
+                            maxLineGap = 170       # 検出された2本の線を1本とみなす
                         )
     # 線分が見つかれば{x1, y1, x2, y2}のタプル、見つからなければNone
     if lines is not None:

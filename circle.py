@@ -15,15 +15,15 @@ for file in files:
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray_image, (5, 5), 0)
 
-    # ハフ変換による円を検出
+    # ハフ変換により円を検出
     circles = cv2.HoughCircles(blurred, 
                             cv2.HOUGH_GRADIENT, 
-                            dp=1.5,          # dpは解像度の比率
+                            dp=1.5,          # 解像度の比率
                             minDist=330,     # 円の中心の最小距離、誤検出に関わる
                             param1=100,      # Cannyエッジ検出の大きい方のしきい値
                             param2=40,       # 投票数の基準
-                            minRadius=800,   # 最小半径   
-                            maxRadius=1400   # 最大半径
+                            minRadius=700,   # 最小半径   
+                            maxRadius=1000   # 最大半径
                             )
 
     if circles is not None:
