@@ -1,16 +1,5 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-
-# 直線の傾きを求める関数
-# def angle(line1, line2):
-#     x1_1, y1_1, x1_2, y1_2 = line1
-#     x2_1, y2_1, x2_2, y2_2 = line2
-
-#     angle1 = np.arctan2(y1_2 - y1_1, x1_2 - x1_1)
-#     angle2 = np.arctan2(y2_2 - y2_1, x2_2 - x2_1)
-#     angle = np.abs(angle1 - angle2)
-#     return np.degrees(angle)
 
 image_path = "circles/3.png"
 image = cv2.imread(image_path)

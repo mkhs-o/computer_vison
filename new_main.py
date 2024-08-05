@@ -1,12 +1,64 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 import os 
+
 result_dir = 'result'
 images_dir = 'clocks'
 
 os.makedirs(result_dir, exist_ok = True)
 files = os.listdir(images_dir)
+
+# 針の位置と得られた時刻に矛盾がないかチェックする
+def check_time(x1, y1, x2, y2, time):
+    # 12時は除外
+    if time == 0:
+        return False
+    # 針がx軸と平行のとき
+    if y1 == y2:
+        # 針が右側
+        if x1 < x2:
+            if time == 3:
+                return True
+            else:
+                return False
+        # 針が左側
+        else:
+            if time == 9:
+                return True
+            else:
+                return False 
+    # 針が上側
+    if y1 > y2:
+        # 12時は除外
+        if x1 == x2:
+            return False
+        # 針が右側
+        if x1 < x2:
+            if 1 <= time <= 3:
+                return True
+            else:
+                return False
+        # 針が左側
+        else:
+            if 9 <= time <= 11:
+                return True
+            else:
+                return False
+    # 針が下側
+    else:
+        # 針が右側
+        if x1 <= x2:
+            if 4 <= time <= 6:
+                return True
+            else:
+                return False
+        # 針が左側
+        else:
+            if  7 <= time <= 9:
+                return True
+            else:
+                return False
+
 
 for file in files:
     image_path = os.path.join(images_dir, file)
@@ -40,7 +92,7 @@ for file in files:
         # 円の中心座標の平均をプロット
         cv2.circle(image, (center_ave_x, center_ave_y), 30, (255, 0, 0), 20)
     else:
-        print('f{file}:円未検出')
+        print(f'{file}:円未検出')
         break
 
     # 時計の針の検出
@@ -71,56 +123,6 @@ for file in files:
         # 円の中心と近い針のうち、初めて12時以外を指すものが短針であり、正しい時刻を表す
         distances.sort()
 
-        def check_time(x1, y1, x2, y2, time):
-            # 12時は除外
-            if time == 0:
-                return False
-            # 針がx軸と平行のとき
-            if y1 == y2:
-                # 針が右側
-                if x1 < x2:
-                    if time == 3:
-                        return True
-                    else:
-                        return False
-                # 針が左側
-                else:
-                    if time == 9:
-                        return True
-                    else:
-                        return False 
-            # 針が上側
-            if y1 > y2:
-                # 12時は除外
-                if x1 == x2:
-                    return False
-                # 針が右側
-                if x1 < x2:
-                    if 1 <= time <= 3:
-                        return True
-                    else:
-                        return False
-                # 針が左側
-                else:
-                    if 9 <= time <= 11:
-                        return True
-                    else:
-                        return False
-            # 針が下側
-            else:
-                # 針が右側
-                if x1 <= x2:
-                    if 4 <= time <= 6:
-                        return True
-                    else:
-                        return False
-                # 針が左側
-                else:
-                    if  7 <= time <= 9:
-                        return True
-                    else:
-                        return False
-                    
         for distance in distances:
             x1, y1, x2, y2 = distance[1]
             # 直線の始点を円の中心に近いものとする
@@ -154,10 +156,11 @@ for file in files:
             # 時計は1時間に30°進む
             time = round(angle_degrees / 30)
 
+            # 得られた時間に矛盾がないかチェック
             if (check_time(x1, y1, x2, y2, time)):
                 cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 10)
-                print(f'{time}時')
+                print(f'{file}: {time}時')
                 cv2.imwrite(f'{result_dir}/{time}時.png', image)
                 break
     else:
-        print('f{file}:直線未検出')
+        print(f'{file}:直線未検出')
