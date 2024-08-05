@@ -59,7 +59,6 @@ def check_time(x1, y1, x2, y2, time):
             else:
                 return False
 
-
 for file in files:
     image_path = os.path.join(images_dir, file)
     image = cv2.imread(image_path)
