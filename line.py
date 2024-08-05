@@ -18,7 +18,7 @@ for file in files:
 
     edges = cv2.Canny(blurred, 20, 50, apertureSize = 3)    # Cannyエッジ検出
     cv2.imwrite('edges.png', edges)
-    #計算不可が少ない、長さを決められる, maxLineGap 検出された2本の線を1本とみなす間隔
+    # ハフ変換
     lines = cv2.HoughLinesP(edges,               
                             rho = 1,              
                             theta = np.pi/100,
